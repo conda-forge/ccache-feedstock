@@ -1,6 +1,8 @@
 {% set name = "ccache" %}
-{% set version = "3.3.2" %}
-{% set sha256 = "d2b2033ac351f24e754b27984fd7250074b9eb776d2f9ef96913f20bd5475877" %}
+{% set version = "3.3.4" %}
+{% set sha256 = "fa9d7f38367431bc86b19ad107d709ca7ecf1574fdacca01698bdf0a47cd8567" %}
+{% set posix = 'm2-' if win else '' %}
+{% set native = 'm2w64-' if win else '' %}
 
 package:
   name: {{ name|lower }}
@@ -18,6 +20,12 @@ requirements:
   build:
     - zlib 1.2.*
     - xz 5.2.*
+    - posix  # [win]
+    - m2-automake-wrapper  # [win]
+    - {{ native }}toolchain  # [win]
+    - {{ posix }}automake  # [not win]
+    - {{ posix }}autoconf
+    - {{ posix }}libtool
   run:
     - zlib 1.2.*
 
@@ -25,6 +33,7 @@ test:
   commands:
     - ccache --help
     - ccache --version
+    - which ccache
 
 about:
   home: https://ccache.samba.org/
