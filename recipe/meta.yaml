@@ -10,13 +10,17 @@ source:
   sha256: 1c6501d5bd01952f5535c3f11ca774aedf4711e373a7bea7e0b1f487f0789b19
 
 build:
-  number: 0
-  skip: true  # [win]
+  number: 1
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - posix  # [win]
+    - m2-automake-wrapper  # [win]
+    - m2w64-toolchain  # [win]
+    - m2-autoconf  # [win]
+    - m2-libtool  # [win]
   host:
     - zlib
     - xz
