@@ -1,15 +1,13 @@
 {% set name = "ccache" %}
-{% set version = "3.3.6" %}
-{% set sha256 = "eac8d2a5055014bebae1434d9b7c66c25d64323800808c27a4534cee167e6bea" %}
+{% set version = "3.7.1" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  fn: {{ name }}-{{ version }}.tar.bz2
-  url: https://www.samba.org/ftp/ccache/{{ name }}-{{ version }}.tar.bz2
-  sha256: {{ sha256 }}
+  url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.bz2
+  sha256: 1c6501d5bd01952f5535c3f11ca774aedf4711e373a7bea7e0b1f487f0789b19
 
 build:
   number: 0
@@ -17,10 +15,13 @@ build:
 
 requirements:
   build:
-    - zlib 1.2.*
-    - xz 5.2.*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - zlib
+    - xz
   run:
-    - zlib 1.2.*
+    - zlib
 
 test:
   commands:
@@ -30,7 +31,9 @@ test:
 about:
   home: https://ccache.samba.org/
   license: GPL-3.0
-  summary: 'a compiler cache'
+  license_family: GPL
+  license_file: GPL-3.0.txt
+  summary: 'A compiler cache'
 
   description: |
     ccache is a compiler cache. It speeds up recompilation by caching
@@ -42,3 +45,4 @@ about:
 extra:
   recipe-maintainers:
     - edisongustavo
+    - marcelotrevisani
