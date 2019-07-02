@@ -8,7 +8,7 @@
 EXEEXT=.exe
 
 # build the minimum ccache binary
-make ccache$EXEEXT
+make
 make install
 
 # hack to force including ccache on the conda environment search path in windows
