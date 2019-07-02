@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+./autogen.sh
 ./configure --prefix=$PREFIX \
             LD=link \
             CXXCPP="cl -nologo -EP" \
