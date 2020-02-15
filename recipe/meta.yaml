@@ -1,13 +1,13 @@
 {% set name = "ccache" %}
-{% set version = "3.7.1" %}
+{% set version = "3.7.7" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.bz2
-  sha256: 1c6501d5bd01952f5535c3f11ca774aedf4711e373a7bea7e0b1f487f0789b19
+  url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
+  sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a
 
 build:
   number: 0
