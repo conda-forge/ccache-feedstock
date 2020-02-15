@@ -10,13 +10,14 @@ source:
   sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a
 
 build:
-  number: 0
+  number: 1
   skip: true  # [win]
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   host:
     - zlib
     - xz
