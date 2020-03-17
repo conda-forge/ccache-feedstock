@@ -1,0 +1,11 @@
+--- work/CMakeLists.txt.orig	2020-03-16 19:19:37.861251900 +0100
++++ work/CMakeLists.txt	2020-03-16 19:22:12.215100800 +0100
+@@ -3,6 +3,8 @@
+ project(ccache)
+ set(CMAKE_CXX_STANDARD 11)
+ 
++set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
++
+ #
+ # 3rd party
+ #

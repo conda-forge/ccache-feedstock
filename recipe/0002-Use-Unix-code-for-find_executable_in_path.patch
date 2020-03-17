@@ -1,0 +1,49 @@
+--- work/src/execute.cpp.orig	2020-03-16 19:46:43.706996800 +0100
++++ work/src/execute.cpp	2020-03-16 20:35:05.735310500 +0100
+@@ -335,18 +335,36 @@
+   for (char* tok = strtok_r(path_buf, PATH_DELIM, &saveptr); tok;
+        tok = strtok_r(NULL, PATH_DELIM, &saveptr)) {
+ #ifdef _WIN32
+-    char namebuf[MAX_PATH];
+-    int ret = SearchPath(tok, name, NULL, sizeof(namebuf), namebuf, NULL);
+-    if (!ret) {
+-      char* exename = format("%s.exe", name);
+-      ret = SearchPath(tok, exename, NULL, sizeof(namebuf), namebuf, NULL);
+-      free(exename);
+-    }
+-    (void)exclude_name;
+-    if (ret) {
++    char* fname = format("%s\\%s", tok, name);
++    auto st1 = Stat::lstat(fname);
++    auto st2 = Stat::stat(fname);
++    printf("st1 (%s): %s\n", fname, st1 ? "true" : "false");
++    printf("st2 (%s): %s\n", fname, st2 ? "true" : "false");
++    printf("st2.is_regular(): %s\n", st2.is_regular() ? "true" : "false");
++    printf("access(fname, X_OK): %d\n", access(fname, X_OK));
++    printf("st1.is_symlink(): %s\n", st1.is_symlink() ? "true" : "false");
++    char* buf2 = x_realpath(fname);
++    printf("x_realpath(fname): %s\n", buf2);
++    // Look for a normal executable file.
++    if (st1 && st2 && st2.is_regular() && access(fname, X_OK) == 0) {
++      if (st1.is_symlink()) {
++        char* buf = x_realpath(fname);
++        if (buf) {
++          string_view p = Util::base_name(buf);
++          if (p == exclude_name) {
++            // It's a link to "ccache"!
++            free(buf);
++            continue;
++          }
++          free(buf);
++        }
++      }
++
++      // Found it!
+       free(path_buf);
+-      return x_strdup(namebuf);
++      return fname;
+     }
++    free(fname);
+ #else
+     char* fname = format("%s/%s", tok, name);
+     auto st1 = Stat::lstat(fname);

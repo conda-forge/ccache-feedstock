@@ -14,14 +14,18 @@ source:
   #   - 0001-Visual-C-C-compiler-support.patch  # [win]
   git_url: https://github.com/cristianadam/ccache.git  # [win]
   git_tag: 7931393c825cd4e9a161ffd405d0756e7e628f0e  # [win]
+  patches:
+    - 0001-CMAKE_VERBOSE_MAKEFILE_ON.patch
+    - 0002-Use-Unix-code-for-find_executable_in_path.patch
 
 build:
-  number: 4
+  number: 6
 
 requirements:
   build:
     - {{ compiler('c') }}  # [not win]
     - {{ compiler('cxx') }}  # [not win]
+    - m2w64-toolchain  # [win]
     - make  # [not win]
     - cmake  # [win]
     - ninja  # [win]
