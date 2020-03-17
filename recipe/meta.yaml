@@ -1,5 +1,5 @@
 {% set name = "ccache" %}
-{% set version = "3.7.7" %}
+{% set version = "3.7.8" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
-  sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a
+  sha256: 73def0544be250b473c717e42e785e436ab725f82bf4bde8149574312972f5de
 
 build:
-  number: 1
+  number: 0
   skip: true  # [win]
 
 requirements:
@@ -34,7 +34,7 @@ about:
   license: GPL-3.0
   license_family: GPL
   license_file: GPL-3.0.txt
-  summary: 'A compiler cache'
+  summary: A compiler cache
 
   description: |
     ccache is a compiler cache. It speeds up recompilation by caching
