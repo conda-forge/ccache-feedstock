@@ -19,7 +19,7 @@ source:
     - 0002-Use-Unix-code-for-find_executable_in_path.patch
 
 build:
-  number: 6
+  number: 7
 
 requirements:
   build:
@@ -30,6 +30,8 @@ requirements:
     - cmake  # [win]
     - ninja  # [win]
     - git  # [win]
+    - patch  # [not win]
+    - m2-patch  # [win]
   host:
     - zlib  # [not win]
     - xz  # [not win]
