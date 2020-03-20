@@ -1,25 +1,25 @@
 {% set name = "ccache" %}
-{% set version = "3.7.7" %}
+{% set version = "3.7.7" %}  # [not win]
+{% set fork = "ccahe" %}  # [not win]
+{% set version = "3.7.1" %}  # [win]
+{% set fork = "cristianadam" %}  # [win]
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz  # [not win]
+  url: https://github.com/{{ fork }}/{{ fork }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz  # [not win]
   sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a  # [not win]
-  # git_url: https://github.com/ccache/ccache.git  # [win]
-  # git_tag: v3.7.7  # [win]
-  # patches:  # [win]
-  #   - 0001-Visual-C-C-compiler-support.patch  # [win]
-  git_url: https://github.com/cristianadam/ccache.git  # [win]
+  folder: ccache.{{ fork }}
+  git_url: https://github.com/{{ fork }}/{{ name }}.git  # [win]
   git_tag: 7931393c825cd4e9a161ffd405d0756e7e628f0e  # [win]
   patches:
     - 0001-CMAKE_VERBOSE_MAKEFILE_ON.patch
     - 0002-Use-Unix-code-for-find_executable_in_path.patch
 
 build:
-  number: 7
+  number: 0
 
 requirements:
   build:
@@ -40,12 +40,15 @@ test:
   commands:
     - ccache --help
     - ccache --version
+    # We need to test both ccache and ccache.exe on Windows.
+    - ccache.exe --help  # [win]
+    - ccache.exe --version  # [win]
 
 about:
   home: https://ccache.samba.org/
   license: GPL-3.0
   license_family: GPL
-  license_file: GPL-3.0.txt
+  license_file: ccache.{{ fork }}/GPL-3.0.txt
   summary: 'A compiler cache'
 
   description: |

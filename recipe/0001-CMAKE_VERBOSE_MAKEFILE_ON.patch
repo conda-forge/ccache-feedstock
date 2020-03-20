@@ -1,6 +1,17 @@
---- work/CMakeLists.txt.orig	2020-03-16 19:19:37.861251900 +0100
-+++ work/CMakeLists.txt	2020-03-16 19:22:12.215100800 +0100
-@@ -3,6 +3,8 @@
+From 4d55bef1dc407a1cd63bd500f2c45810cd6acb83 Mon Sep 17 00:00:00 2001
+From: Ray Donnelly <mingw.android@gmail.com>
+Date: Wed, 18 Mar 2020 01:11:00 +0000
+Subject: [PATCH 1/2] CMAKE_VERBOSE_MAKEFILE_ON
+
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c484a30..bb93197 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5)
  project(ccache)
  set(CMAKE_CXX_STANDARD 11)
  
@@ -9,3 +20,6 @@
  #
  # 3rd party
  #
+-- 
+2.24.1
+
