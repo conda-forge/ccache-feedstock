@@ -9,9 +9,9 @@ package:
   version: {{ version }}
 
 source:
-  url: https://github.com/{{ fork }}/{{ fork }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz  # [not win]
+  url: https://github.com/{{ fork }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz  # [not win]
   sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a  # [not win]
-  # folder: ccache.{{ fork }}
+  folder: ccache.{{ fork }}
   # path: W:/src/ccache.{{ fork }}
   # path_via_symlink: True
   git_url: https://github.com/{{ fork }}/{{ name }}.git  # [win]
