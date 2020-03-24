@@ -1,16 +1,19 @@
-From 8b0c861018a4cc724e9927f73dff9c42888aba08 Mon Sep 17 00:00:00 2001
+From 59a6e1dc3c97cac7d9003456b7d2208a5792811e Mon Sep 17 00:00:00 2001
 From: Ray Donnelly <mingw.android@gmail.com>
 Date: Wed, 18 Mar 2020 01:09:37 +0000
 Subject: [PATCH 2/2] Use Unix code for find_executable_in_path
 
 We must also search for the executable name without any .exe suffix when comparing
-it with MYNAME ("ccache")
+it with MYNAME ("ccache").
+
+Finally, we search both for the passed in compiler both with and without an .exe
+suffix, preferring the passed in value.
 ---
- src/execute.cpp | 61 +++++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 51 insertions(+), 10 deletions(-)
+ src/execute.cpp | 86 ++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 75 insertions(+), 11 deletions(-)
 
 diff --git a/src/execute.cpp b/src/execute.cpp
-index 7ab4c0d..a720607 100644
+index 7ab4c0d..15b19d8 100644
 --- a/src/execute.cpp
 +++ b/src/execute.cpp
 @@ -322,6 +322,21 @@ find_executable(const char* name, const char* exclude_name)
@@ -19,7 +22,7 @@ index 7ab4c0d..a720607 100644
  
 +#if defined(_WIN32)
 +int
-+strrindex(char *fullstring ,char *substring)
++strrindex(const char *fullstring, const char *substring)
 +{
 +    int i, j, k, res = -1;
 +
@@ -35,7 +38,21 @@ index 7ab4c0d..a720607 100644
  static char*
  find_executable_in_path(const char* name,
                          const char* exclude_name,
-@@ -335,18 +350,44 @@ find_executable_in_path(const char* name,
+@@ -332,21 +347,70 @@ find_executable_in_path(const char* name,
+   // Search the path looking for the first compiler of the right name that
+   // isn't us.
+   char* saveptr = NULL;
++
++  // Should we consider supporting all of PATHEXT? Would need to execute some of them
++  // through a cmd.exe shell though I expect. For now, ".exe" and no extension are all
++  // we support. This has been seen to be essential in the wild. Qt for example calls
++  // "cl", and not "cl.exe".
++  int stridx = strrindex(name, ".exe");
++  int has_ext = 0;
++  if (stridx == strlen(name) - 4) {
++    has_ext = 1;
++  }
++
    for (char* tok = strtok_r(path_buf, PATH_DELIM, &saveptr); tok;
         tok = strtok_r(NULL, PATH_DELIM, &saveptr)) {
  #ifdef _WIN32
@@ -48,43 +65,56 @@ index 7ab4c0d..a720607 100644
 -    }
 -    (void)exclude_name;
 -    if (ret) {
-+    char* fname = format("%s\\%s", tok, name);
-+    auto st1 = Stat::lstat(fname);
-+    auto st2 = Stat::stat(fname);
-+#if 0
-+    printf("st1 (%s): %s\n", fname, st1 ? "true" : "false");
-+    printf("st2 (%s): %s\n", fname, st2 ? "true" : "false");
-+    printf("st2.is_regular(): %s\n", st2.is_regular() ? "true" : "false");
-+    printf("access(fname, X_OK): %d\n", access(fname, X_OK));
-+    printf("st1.is_symlink(): %s\n", st1.is_symlink() ? "true" : "false");
-+    char* buf2 = x_realpath(fname);
-+    printf("x_realpath(fname): %s\n", buf2);
-+#endif
-+    // Look for a normal executable file.
-+    if (st1 && st2 && st2.is_regular() && access(fname, X_OK) == 0) {
-+      char* buf = x_realpath(fname);
-+      // if (st1.is_symlink()) { .. is_symlink always returns false, but x_realpath is still useful */
-+      if (buf) {
-+        if (buf) {
-+          int stridx = strrindex(buf, ".exe");
-+          int length = strlen(buf);
-+          if (stridx == strlen(buf) - 4) {
-+            buf[stridx] = '\0';
-+          }
-+          string_view p = Util::base_name(buf);
-+          if (p == exclude_name) {
-+            // It's a link to "ccache"!
-+            free(buf);
-+            continue;
-+          }
-+          free(buf);
+-      free(path_buf);
+-      return x_strdup(namebuf);
++    // Four extra spaces in-case we need to add ".exe"
++    char* fname = NULL;
++    for (int ext = 0; ext < 2; ++ext) {
++      fname = format("%s\\%s    ", tok, name);
++      fname[strlen(tok) + strlen(name) + 1] = '\0';
++      // 0 is always the original passed in name, we prefer that in-case both exist.
++      if (ext == 1) {
++        if (has_ext) {
++          fname[strlen(tok) + strlen(name) - 3] = '\0';
++        } else {
++          strcat(fname, ".exe");
 +        }
 +      }
++      auto st1 = Stat::lstat(fname);
++      auto st2 = Stat::stat(fname);
++  #if 0
++      printf("st1 (%s): %s\n", fname, st1 ? "true" : "false");
++      printf("st2 (%s): %s\n", fname, st2 ? "true" : "false");
++      printf("st2.is_regular(): %s\n", st2.is_regular() ? "true" : "false");
++      printf("access(fname, X_OK): %d\n", access(fname, X_OK));
++      printf("st1.is_symlink(): %s\n", st1.is_symlink() ? "true" : "false");
++      char* buf2 = x_realpath(fname);
++      printf("x_realpath(fname): %s\n", buf2);
++  #endif
++      if (st1 && st2 && st2.is_regular() && access(fname, X_OK) == 0) {
++        char* buf = x_realpath(fname);
++        // if (st1.is_symlink()) { .. is_symlink always returns false, but x_realpath is still useful */
++        if (buf) {
++          if (buf) {
++            int stridx = strrindex(buf, ".exe");
++            int length = strlen(buf);
++            if (stridx == strlen(buf) - 4) {
++              buf[stridx] = '\0';
++            }
++            string_view p = Util::base_name(buf);
++            if (p == exclude_name) {
++              // It's a link to "ccache"!
++              free(buf);
++              continue;
++            }
++            free(buf);
++          }
++        }
 +
-+      // Found it!
-       free(path_buf);
--      return x_strdup(namebuf);
-+      return fname;
++        // Found it!
++        free(path_buf);
++        return fname;
++      }
      }
 +    free(fname);
  #else

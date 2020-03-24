@@ -11,7 +11,9 @@ package:
 source:
   url: https://github.com/{{ fork }}/{{ fork }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz  # [not win]
   sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a  # [not win]
-  folder: ccache.{{ fork }}
+  # folder: ccache.{{ fork }}
+  # path: W:/src/ccache.{{ fork }}
+  # path_via_symlink: True
   git_url: https://github.com/{{ fork }}/{{ name }}.git  # [win]
   git_tag: 7931393c825cd4e9a161ffd405d0756e7e628f0e  # [win]
   patches:
@@ -19,7 +21,7 @@ source:
     - 0002-Use-Unix-code-for-find_executable_in_path.patch
 
 build:
-  number: 0
+  number: 2
 
 requirements:
   build:
@@ -37,12 +39,20 @@ requirements:
     - xz  # [not win]
 
 test:
+  requires:
+    - {{ compiler('c') }}
   commands:
+    # 1. Tests that it runs at all
     - ccache --help
     - ccache --version
-    # We need to test both ccache and ccache.exe on Windows.
+    # 1.1. We need to test both ccache and ccache.exe on Windows.
     - ccache.exe --help  # [win]
     - ccache.exe --version  # [win]
+    # 2. Test finding and launching a C compiler:
+    - ccache ${CC}  # [not win]
+    - ccache cl.exe  # [win]
+    - ccache cl  # [win]
+    # We could consider some tests to see that we actually cache compilations!
 
 about:
   home: https://ccache.samba.org/
