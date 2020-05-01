@@ -1,24 +1,30 @@
+# {% set name = "ccache" %}
+# {% set version = "3.7.9" %}  # [not win]
+# {% set fork = "ccache" %}  # [not win]
+# {% set version = "3.7.1" %}  # [win]
+# {% set fork = "cristianadam" %}  # [win]
 {% set name = "ccache" %}
-{% set version = "3.7.7" %}  # [not win]
-{% set fork = "ccache" %}  # [not win]
-{% set version = "3.7.1" %}  # [win]
-{% set fork = "cristianadam" %}  # [win]
+{% set version = "3.7.9" %}
+{% set fork = "ccache" %}
+
+{% set p = 'm2-' if win else '' %}
+{% set n = 'm2w64-' if win else '' %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://github.com/{{ fork }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz  # [not win]
-  sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a  # [not win]
+  url: https://github.com/{{ fork }}/{{ name }}/releases/download/v{{ version }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 92838e2133c9e704fdab9ee2608dad86c99021278b9ac47d065aa8ff2ea8ce36
   folder: ccache.{{ fork }}
   # path: W:/src/ccache.{{ fork }}
   # path_via_symlink: True
-  git_url: https://github.com/{{ fork }}/{{ name }}.git  # [win]
-  git_tag: 7931393c825cd4e9a161ffd405d0756e7e628f0e  # [win]
-  patches:
-    - 0001-CMAKE_VERBOSE_MAKEFILE_ON.patch  # [win]
-    - 0002-Use-Unix-code-for-find_executable_in_path.patch  # [win]
+#  git_url: https://github.com/{{ fork }}/{{ name }}.git  # [win]
+#  git_tag: 7931393c825cd4e9a161ffd405d0756e7e628f0e  # [win]
+#  patches:
+#    - 0001-CMAKE_VERBOSE_MAKEFILE_ON.patch  # [win]
+#    - 0002-Use-Unix-code-for-find_executable_in_path.patch  # [win]
 
 build:
   number: 2
@@ -29,14 +35,22 @@ requirements:
     - {{ compiler('cxx') }}  # [not win]
     - m2w64-toolchain  # [win]
     - make  # [not win]
-    - cmake  # [win]
-    - ninja  # [win]
+{% if fork == "cristianadam" %}
+    - cmake
+    - ninja
+{% else %}
+    - {{ p }}make
+    - {{ p }}base  # [win]
+    - {{ p }}filesystem  # [win]
+{% endif %}
     - git  # [win]
     - patch  # [not win]
     - m2-patch  # [win]
   host:
     - zlib  # [not win]
     - xz  # [not win]
+  run:  # [win]
+    - m2w64-gcc-libs  # [win]
 
 test:
   requires:
@@ -50,8 +64,12 @@ test:
     - ccache.exe --version  # [win]
     # 2. Test finding and launching a C compiler:
     - ccache ${CC} --help  # [not win]
-    - ccache cl.exe /?  # [win]
-    - ccache cl /?  # [win]
+    - set CCACHE_DEBUG=1  # [win]
+    # Using /? here fails
+    # Using -? works, but pauses for pagination
+    # .. hence the echo
+    - echo | ccache cl.exe -? # [win]
+    - echo | ccache cl -? # [win]
     # We could consider some tests to see that we actually cache compilations!
 
 about:
