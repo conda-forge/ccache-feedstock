@@ -32,7 +32,6 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}  # [not win]
-    - {{ compiler('cxx') }}  # [not win]
     - m2w64-toolchain  # [win]
     - make  # [not win]
 {% if fork == "cristianadam" %}
@@ -48,7 +47,7 @@ requirements:
     - m2-patch  # [win]
   host:
     - zlib  # [not win]
-    - xz  # [not win]
+    - xz  # [linux]
   run:  # [win]
     - m2w64-gcc-libs  # [win]
 
