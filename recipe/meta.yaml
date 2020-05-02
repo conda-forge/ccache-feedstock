@@ -27,7 +27,7 @@ source:
 #    - 0002-Use-Unix-code-for-find_executable_in_path.patch  # [win]
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
