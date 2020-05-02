@@ -1,0 +1,255 @@
+From 1339172704b792e1a397ecfc8c5b937a0fae62e4 Mon Sep 17 00:00:00 2001
+From: Cristian Adam <cristian.adam@gmail.com>
+Date: Thu, 9 Jan 2020 23:11:04 +0100
+Subject: [PATCH] Visual C/C++ compiler support
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+I picked only the compiler commits from:
+https://github.com/ccache/ccache/pull/162
+
+The following commits I've adapted to the latest ccache C++ code:
+
+375fe24: Add compiler_is_msvc() and MSVC specific option table.
+7e01763: Add handling of /Fo option (replaces -o, but shall have no
+space)
+0c5cd25: Manage /E, /c equivalence. -g is gcc only. -O or /O is msvc
+only.
+4f61b59: MSVC send part of the error/warning messages to STDOUT, so
+concat wit…
+---
+ src/Util.cpp    |  2 +-
+ src/ccache.cpp  | 96 +++++++++++++++++++++++++++++++++++++++++++------
+ src/ccache.hpp  |  1 +
+ src/compopt.cpp | 11 ++++++
+ 4 files changed, 98 insertions(+), 12 deletions(-)
+
+diff --git a/src/Util.cpp b/src/Util.cpp
+index f624f73..d132e84 100644
+--- a/src/Util.cpp
++++ b/src/Util.cpp
+@@ -81,7 +81,7 @@ base_name(string_view path)
+   size_t n = path.rfind('/');
+ #ifdef _WIN32
+   size_t n2 = path.rfind('\\');
+-  if (n2 != std::string::npos && n2 > n) {
++  if (n2 != std::string::npos && (n == std::string::npos || n2 > n)) {
+     n = n2;
+   }
+ #endif
+diff --git a/src/ccache.cpp b/src/ccache.cpp
+index 7153917..24c98f6 100644
+--- a/src/ccache.cpp
++++ b/src/ccache.cpp
+@@ -568,14 +568,19 @@ guess_compiler(const char* path)
+ {
+   string_view name = Util::base_name(path);
+   enum guessed_compiler result = GUESSED_UNKNOWN;
+-  if (name == "clang") {
++  if (name == "clang" || name == "clang.exe" ||
++      name == "clang++" || name == "clang++.exe") {
+     result = GUESSED_CLANG;
+-  } else if (name == "gcc" || name == "g++") {
++  } else if (name == "gcc" || name == "gcc.exe" ||
++             name == "g++" || name == "g++.exe") {
+     result = GUESSED_GCC;
+   } else if (name == "nvcc") {
+     result = GUESSED_NVCC;
+   } else if (name == "pump" || name == "distcc-pump") {
+     result = GUESSED_PUMP;
++  } else if (name == "cl" || name == "cl.exe" ||
++             name == "clang-cl" || name == "clang-cl.exe") {
++    result = GUESSED_MSVC;
+   }
+   return result;
+ }
+@@ -1289,8 +1294,14 @@ create_cachedir_tag(const std::string& dir)
+ static void
+ to_cache(struct args* args, struct hash* depend_mode_hash)
+ {
+-  args_add(args, "-o");
+-  args_add(args, output_obj);
++  if (guessed_compiler == GUESSED_MSVC) {
++    char *fo = format("-Fo%s", output_obj);
++    args_add(args, fo);
++    free(fo);
++  } else {
++    args_add(args, "-o");
++    args_add(args, output_obj);
++  }
+ 
+   if (g_config.hard_link()) {
+     // Workaround for Clang bug where it overwrites an existing object file
+@@ -1375,9 +1386,63 @@ to_cache(struct args* args, struct hash* depend_mode_hash)
+     failed();
+   }
+ 
++  // MSVC compiler always print the input file name to stdout,
++  // plus parts of the warnings/error messages.
++  // So we have to fusion that into stderr...
++  if (guessed_compiler == GUESSED_MSVC) {
++    char *tmp_stderr2 = format("%s.2", tmp_stderr);
++    if (x_rename(tmp_stderr, tmp_stderr2)) {
++      cc_log("Failed to rename %s to %s: %s", tmp_stderr, tmp_stderr2,
++             strerror(errno));
++      stats_update(STATS_ERROR);
++      failed();
++    }
++
++    int fd_result =
++    open(tmp_stderr, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666);
++    if (fd_result == -1) {
++      cc_log("Failed opening %s: %s", tmp_stderr, strerror(errno));
++      stats_update(STATS_ERROR);
++      failed();
++    }
++
++    std::ifstream stdout_stream(tmp_stdout);
++    if (!stdout_stream) {
++      cc_log("Failed opening %s: %s", tmp_stdout, strerror(errno));
++      stats_update(STATS_ERROR);
++      failed();
++    }
++
++    // Skip the /showIncludes include header files which are displayed on stdout
++    // TODO: handle non English installations
++    std::string line;
++    while (std::getline(stdout_stream, line)) {
++      if (!Util::starts_with(line, "Note: including file: ")) {
++        line.append("\n");
++        ::write(fd_result, reinterpret_cast<const void*>(line.data()),
++                line.size());
++      }
++    }
++
++    int fd_stderr = open(tmp_stderr2, O_RDONLY | O_BINARY);
++    if (fd_stderr == -1) {
++      cc_log("Failed opening %s: %s", tmp_stderr2, strerror(errno));
++      stats_update(STATS_ERROR);
++      failed();
++    }
++    copy_fd(fd_stderr, fd_result);
++    close(fd_stderr);
++
++    close(fd_result);
++    tmp_unlink(tmp_stderr2);
++    free(tmp_stderr2);
++  }
++
+   // distcc-pump outputs lines like this:
+   // __________Using # distcc servers in pump mode
+-  if (st.size() != 0 && guessed_compiler != GUESSED_PUMP) {
++  if (st.size() != 0 &&
++      guessed_compiler != GUESSED_PUMP &&
++      guessed_compiler != GUESSED_MSVC) {
+     cc_log("Compiler produced stdout");
+     stats_update(STATS_STDOUT);
+     tmp_unlink(tmp_stdout);
+@@ -2455,7 +2520,7 @@ cc_process_args(struct args* args,
+     }
+ 
+     // Special case for -E.
+-    if (str_eq(argv[i], "-E")) {
++    if (str_eq(argv[i], "-E") || str_eq(argv[i], "/E")) {
+       stats_update(STATS_PREPROCESSING);
+       result = false;
+       goto out;
+@@ -2618,7 +2683,7 @@ cc_process_args(struct args* args,
+     }
+ 
+     // We must have -c.
+-    if (str_eq(argv[i], "-c")) {
++    if (str_eq(argv[i], "-c") || str_eq(argv[i], "/c")) {
+       found_c_opt = true;
+       continue;
+     }
+@@ -2678,6 +2743,12 @@ cc_process_args(struct args* args,
+       continue;
+     }
+ 
++    // MSVC /Fo with no space.
++    if (str_startswith(argv[i], "/Fo") && guessed_compiler == GUESSED_MSVC) {
++      output_obj = make_relative_path(x_strdup(&argv[i][3]));
++      continue;
++    }
++
+     if (str_startswith(argv[i], "-fdebug-prefix-map=")
+         || str_startswith(argv[i], "-ffile-prefix-map=")) {
+       debug_prefix_maps = static_cast<char**>(x_realloc(
+@@ -2690,7 +2761,7 @@ cc_process_args(struct args* args,
+ 
+     // Debugging is handled specially, so that we know if we can strip line
+     // number info.
+-    if (str_startswith(argv[i], "-g")) {
++    if (str_startswith(argv[i], "-g") && guessed_compiler != GUESSED_MSVC) {
+       args_add(common_args, argv[i]);
+ 
+       if (str_startswith(argv[i], "-gdwarf")) {
+@@ -2724,7 +2795,8 @@ cc_process_args(struct args* args,
+ 
+     // These options require special handling, because they behave differently
+     // with gcc -E, when the output file is not specified.
+-    if (str_eq(argv[i], "-MD") || str_eq(argv[i], "-MMD")) {
++    if ((str_eq(argv[i], "-MD") || str_eq(argv[i], "-MMD")) &&
++         guessed_compiler != GUESSED_MSVC) {
+       generating_dependencies = true;
+       args_add(dep_args, argv[i]);
+       continue;
+@@ -3068,7 +3140,8 @@ cc_process_args(struct args* args,
+ 
+     // Same as above but options with concatenated argument beginning with a
+     // slash.
+-    if (argv[i][0] == '-') {
++    if (argv[i][0] == '-' ||
++       (guessed_compiler == GUESSED_MSVC && argv[i][0] == '/')) {
+       char* slash_pos = strchr(argv[i], '/');
+       if (slash_pos) {
+         char* option = x_strndup(argv[i], slash_pos - argv[i]);
+@@ -3112,7 +3185,8 @@ cc_process_args(struct args* args,
+     }
+ 
+     // Other options.
+-    if (argv[i][0] == '-') {
++    if (argv[i][0] == '-' ||
++       (guessed_compiler == GUESSED_MSVC && argv[i][0] == '/')) {
+       if (compopt_affects_cpp(argv[i]) || compopt_prefix_affects_cpp(argv[i])) {
+         args_add(cpp_args, argv[i]);
+       } else {
+diff --git a/src/ccache.hpp b/src/ccache.hpp
+index 0c25470..ac1e41d 100644
+--- a/src/ccache.hpp
++++ b/src/ccache.hpp
+@@ -87,6 +87,7 @@ enum guessed_compiler {
+   GUESSED_GCC,
+   GUESSED_NVCC,
+   GUESSED_PUMP,
++  GUESSED_MSVC,
+   GUESSED_UNKNOWN
+ };
+ 
+diff --git a/src/compopt.cpp b/src/compopt.cpp
+index 61a8888..2efbea2 100644
+--- a/src/compopt.cpp
++++ b/src/compopt.cpp
+@@ -128,6 +128,17 @@ static const struct compopt compopts[] = {
+   {"-stdlib=", AFFECTS_CPP | TAKES_CONCAT_ARG},
+   {"-trigraphs", AFFECTS_CPP},
+   {"-u", TAKES_ARG | TAKES_CONCAT_ARG},
++  {"/AI", TAKES_ARG | TAKES_CONCAT_ARG | TAKES_PATH}, // msvc
++  {"/D", AFFECTS_CPP | TAKES_ARG | TAKES_CONCAT_ARG}, // msvc
++  {"/E", TOO_HARD}, // msvc
++  {"/EP", TOO_HARD}, // msvc
++  {"/FI", AFFECTS_CPP | TAKES_ARG | TAKES_CONCAT_ARG | TAKES_PATH}, // msvc
++  {"/FU", AFFECTS_CPP | TAKES_ARG | TAKES_CONCAT_ARG | TAKES_PATH}, // msvc
++  {"/I", AFFECTS_CPP | TAKES_ARG | TAKES_CONCAT_ARG | TAKES_PATH}, // msvc
++  {"/L", TAKES_ARG}, // msvc
++  {"/P", TOO_HARD}, // msvc
++  {"/U", AFFECTS_CPP | TAKES_ARG | TAKES_CONCAT_ARG}, // msvc
++  {"/u", AFFECTS_CPP}, // msvc
+ };
+ 
+ static int
+-- 
+2.25.0
+
