@@ -47,7 +47,6 @@ requirements:
     - m2-patch  # [win]
   host:
     - zlib  # [not win]
-    - xz  # [linux]
   run:  # [win]
     - m2w64-gcc-libs  # [win]
 
