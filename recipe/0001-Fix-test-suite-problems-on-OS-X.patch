@@ -1,0 +1,69 @@
+From 28c27dad8a5fac15e6f8ef487ae2034999b90785 Mon Sep 17 00:00:00 2001
+From: Joel Rosdahl <joel@rosdahl.net>
+Date: Sat, 5 Oct 2019 20:21:08 +0200
+Subject: [PATCH] Fix test suite problems on OS X
+
+As suggested in PR #469.
+
+Co-authored-by: Enrico Sorichetti <enricosorichetti@mac.com>
+---
+ test/run                          | 21 ++++-----------------
+ test/suites/debug_prefix_map.bash |  2 +-
+ 2 files changed, 5 insertions(+), 18 deletions(-)
+
+diff --git a/test/run b/test/run
+index aa47df8..ed9f609 100755
+--- a/test/run
++++ b/test/run
+@@ -114,7 +114,7 @@ file_size() {
+ 
+ objdump_cmd() {
+     if $HOST_OS_APPLE; then
+-        xcrun dwarfdump -r0 $1
++        xcrun dwarfdump -r 0 $1
+     elif $HOST_OS_FREEBSD; then
+         objdump -W $1
+     elif $HOST_OS_WINDOWS || $HOST_OS_CYGWIN; then
+@@ -378,23 +378,10 @@ else
+ fi
+ 
+ if $HOST_OS_APPLE; then
+-    # Grab the developer directory from the environment or try xcode-select
+-    if [ "$XCODE_DEVELOPER_DIR" = "" ]; then
+-      XCODE_DEVELOPER_DIR=`xcode-select --print-path`
+-      if [ "$XCODE_DEVELOPER_DIR" = "" ]; then
+-        echo "Error: XCODE_DEVELOPER_DIR environment variable not set and xcode-select path not set"
+-        exit 1
+-      fi
+-    fi
+-
+-    # Choose the latest SDK if an SDK root is not set
+-    MAC_PLATFORM_DIR=$XCODE_DEVELOPER_DIR/Platforms/MacOSX.platform
++    SDKROOT=$(xcrun --sdk macosx --show-sdk-path 2>/dev/null)
+     if [ "$SDKROOT" = "" ]; then
+-        SDKROOT="`eval ls -f -1 -d \"$MAC_PLATFORM_DIR/Developer/SDKs/\"*.sdk | tail -1`"
+-        if [ "$SDKROOT" = "" ]; then
+-            echo "Error: Cannot find a valid SDK root directory"
+-            exit 1
+-        fi
++        echo "Error: xcrun --show-sdk-path failure"
++        exit 1
+     fi
+ 
+     SYSROOT="-isysroot `echo \"$SDKROOT\" | sed 's/ /\\ /g'`"
+diff --git a/test/suites/debug_prefix_map.bash b/test/suites/debug_prefix_map.bash
+index 553d7ff..688dade 100644
+--- a/test/suites/debug_prefix_map.bash
++++ b/test/suites/debug_prefix_map.bash
+@@ -22,7 +22,7 @@ EOF
+ 
+ grep_cmd() {
+     if $HOST_OS_APPLE; then
+-        grep "( \"$1\" )"
++        grep \"$1\"
+     elif $HOST_OS_WINDOWS || $HOST_OS_CYGWIN; then
+         test -n "$2" && grep -E "$1|$2" || grep "$1" # accept a relative path for source code, in addition to relocation dir
+     else
+-- 
+2.24.0
+

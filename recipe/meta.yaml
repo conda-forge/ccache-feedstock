@@ -8,6 +8,9 @@ package:
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
   sha256: 92838e2133c9e704fdab9ee2608dad86c99021278b9ac47d065aa8ff2ea8ce36
+  patches:
+    # we can remove this patch in the next version of ccache
+    - 0001-Fix-test-suite-problems-on-OS-X.patch
 
 build:
   number: 0
