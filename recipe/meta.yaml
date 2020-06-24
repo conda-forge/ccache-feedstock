@@ -8,6 +8,7 @@ package:
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
   sha256: 447ddf21a5f0ffa6b6d26839ae876a6d17d0d7e3533926cdf78ecd11dad793f8
+  patches: patch_test_suite.patch  # [osx]
 
 build:
   number: 0
