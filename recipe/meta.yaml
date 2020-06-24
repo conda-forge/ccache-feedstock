@@ -1,5 +1,5 @@
 {% set name = "ccache" %}
-{% set version = "3.7.7" %}
+{% set version = "3.7.10" %}
 
 package:
   name: {{ name|lower }}
@@ -7,10 +7,11 @@ package:
 
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
-  sha256: 9b61f7fab2ec15305ee8382b03365503232dfb04b57414e7b0433768d530fa8a
+  sha256: 447ddf21a5f0ffa6b6d26839ae876a6d17d0d7e3533926cdf78ecd11dad793f8
+  patches: patch_test_suite.patch  # [osx]
 
 build:
-  number: 1
+  number: 0
   skip: true  # [win]
 
 requirements:
@@ -31,10 +32,10 @@ test:
 
 about:
   home: https://ccache.samba.org/
-  license: GPL-3.0
+  license: GPL-3.0-only
   license_family: GPL
   license_file: GPL-3.0.txt
-  summary: 'A compiler cache'
+  summary: A compiler cache
 
   description: |
     ccache is a compiler cache. It speeds up recompilation by caching

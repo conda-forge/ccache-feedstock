@@ -3,7 +3,7 @@ About ccache
 
 Home: https://ccache.samba.org/
 
-Package license: GPL-3.0
+Package license: GPL-3.0-only
 
 Feedstock license: BSD 3-Clause
 
@@ -29,7 +29,7 @@ Current build status
     <td>Drone</td>
     <td>
       <a href="https://cloud.drone.io/conda-forge/ccache-feedstock">
-        <img alt="linux" src="https://img.shields.io/drone/build/conda-forge/master.svg?label=Linux">
+        <img alt="linux" src="https://img.shields.io/drone/build/conda-forge/ccache-feedstock/master.svg?label=Linux">
       </a>
     </td>
   </tr>
