@@ -1,0 +1,12 @@
+diff -ruN a/test/suites/debug_prefix_map.bash b/test/suites/debug_prefix_map.bash
+--- a/test/suites/debug_prefix_map.bash	2020-06-22 19:00:31.000000000 +0100
++++ b/test/suites/debug_prefix_map.bash	2020-06-24 06:47:50.206821357 +0100
+@@ -22,7 +22,7 @@
+ 
+ objdump_cmd() {
+     if $HOST_OS_APPLE; then
+-        xcrun dwarfdump -r0 $1
++        xcrun dwarfdump -r 0 $1
+     elif $HOST_OS_FREEBSD; then
+         objdump -W $1
+     else
