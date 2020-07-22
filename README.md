@@ -5,7 +5,7 @@ Home: https://ccache.samba.org/
 
 Package license: GPL-3.0-only
 
-Feedstock license: BSD 3-Clause
+Feedstock license: BSD-3-Clause
 
 Summary: A compiler cache
 
