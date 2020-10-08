@@ -1,0 +1,25 @@
+From 61f3a3a2baf5a482de3da2fced401b65dc1745e7 Mon Sep 17 00:00:00 2001
+From: Chris Burr <christopher.burr@cern.ch>
+Date: Thu, 8 Oct 2020 14:45:34 +0200
+Subject: [PATCH] Remove -lgcov from compiler independent profiling script
+
+---
+ test/suites/profiling.bash | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/suites/profiling.bash b/test/suites/profiling.bash
+index babc4788..553f9086 100644
+--- a/test/suites/profiling.bash
++++ b/test/suites/profiling.bash
+@@ -74,7 +74,7 @@ SUITE_profiling() {
+     expect_stat 'cache hit (direct)' 0
+     expect_stat 'cache miss' 1
+ 
+-    $COMPILER -fprofile-generate=data test.o -lgcov -o test
++    $COMPILER -fprofile-generate=data test.o -o test
+ 
+     ./test
+     merge_profiling_data data
+-- 
+2.27.0
+
