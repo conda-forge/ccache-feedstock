@@ -8,7 +8,9 @@ package:
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
   sha256: d2abe88d4c283ce960e233583061127b156ffb027c6da3cf10770fc0c7244194
-  patches: patch_test_suite.patch  # [osx]
+  patches:
+    - patch_test_suite.patch  # [osx]
+    - 0001-Remove-lgcov-from-compiler-independent-profiling-scr.patch
 
 build:
   number: 0
