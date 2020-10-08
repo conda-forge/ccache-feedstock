@@ -5,9 +5,13 @@ Home: https://ccache.samba.org/
 
 Package license: GPL-3.0-only
 
-Feedstock license: BSD-3-Clause
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/ccache-feedstock/blob/master/LICENSE.txt)
 
 Summary: A compiler cache
+
+Development: https://github.com/ccache/ccache
+
+Documentation: https://ccache.samba.org/manual.html
 
 ccache is a compiler cache. It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is
