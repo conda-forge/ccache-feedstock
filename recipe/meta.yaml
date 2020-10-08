@@ -19,6 +19,8 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - make
+    # The test suite assumes GNU sed
+    - sed
   host:
     - zlib
     - xz
