@@ -1,5 +1,5 @@
 {% set name = "ccache" %}
-{% set version = "3.7.12" %}
+{% set version = "4.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
-  sha256: d2abe88d4c283ce960e233583061127b156ffb027c6da3cf10770fc0c7244194
+  sha256: ac97af86679028ebc8555c99318352588ff50f515fc3a7f8ed21a8ad367e3d45
   patches:
     - patch_test_suite.patch  # [osx]
     - 0001-Remove-lgcov-from-compiler-independent-profiling-scr.patch
