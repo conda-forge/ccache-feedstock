@@ -20,8 +20,9 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
-    # The test suite assumes GNU sed
+    # The test suite assumes GNU sed and find
     - sed
+    - findutils  # [osx]
   host:
     - zstd
 
