@@ -10,7 +10,6 @@ source:
   sha256: cdeefb827b3eef3b42b5454858123881a4a90abbd46cc72cf8c20b3bd039deb7
   patches:
     - patch_test_suite.patch  # [osx]
-    - 0001-Remove-lgcov-from-compiler-independent-profiling-scr.patch
 
 build:
   number: 0
