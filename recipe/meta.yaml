@@ -21,14 +21,12 @@ requirements:
     - gnuconfig  # [unix]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - cmake
     - make
     # The test suite assumes GNU sed
     - sed
   host:
-    - zlib
-    - xz
-  run:
-    - zlib
+    - zstd
 
 test:
   commands:
