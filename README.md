@@ -1,7 +1,7 @@
 About ccache
 ============
 
-Home: https://ccache.samba.org/
+Home: https://ccache.dev/
 
 Package license: GPL-3.0-only
 
@@ -11,7 +11,7 @@ Summary: A compiler cache
 
 Development: https://github.com/ccache/ccache
 
-Documentation: https://ccache.samba.org/manual.html
+Documentation: https://ccache.dev/manual/latest.html
 
 ccache is a compiler cache. It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is
