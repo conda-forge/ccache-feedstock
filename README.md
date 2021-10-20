@@ -23,13 +23,6 @@ Current build status
 
 
 <table><tr>
-    <td>Travis</td>
-    <td>
-      <a href="https://travis-ci.com/conda-forge/ccache-feedstock">
-        <img alt="macOS" src="https://img.shields.io/travis/com/conda-forge/ccache-feedstock/master.svg?label=macOS">
-      </a>
-    </td>
-  </tr><tr>
     <td>Drone</td>
     <td>
       <a href="https://cloud.drone.io/conda-forge/ccache-feedstock">
@@ -82,6 +75,13 @@ Current build status
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3799&branchName=master">
                   <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/ccache-feedstock?branchName=master&jobName=osx&configuration=osx_arm64_" alt="variant">
+                </a>
+              </td>
+            </tr><tr>
+              <td>win_64</td>
+              <td>
+                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=3799&branchName=master">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/ccache-feedstock?branchName=master&jobName=win&configuration=win_64_" alt="variant">
                 </a>
               </td>
             </tr>
@@ -187,4 +187,5 @@ Feedstock Maintainers
 
 * [@edisongustavo](https://github.com/edisongustavo/)
 * [@marcelotrevisani](https://github.com/marcelotrevisani/)
+* [@wolfv](https://github.com/wolfv/)
 
