@@ -194,4 +194,5 @@ Feedstock Maintainers
 
 * [@edisongustavo](https://github.com/edisongustavo/)
 * [@marcelotrevisani](https://github.com/marcelotrevisani/)
+* [@wolfv](https://github.com/wolfv/)
 
