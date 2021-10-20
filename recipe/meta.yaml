@@ -21,9 +21,9 @@ requirements:
     # TODO do this properly
     - clang_win-64  # [win]
     - cmake
-    - ninja         # [win]
+    - ninja
     # The test suite assumes GNU sed and find
-    - sed
+    - sed        # [not win]
     - findutils  # [osx]
   host:
     - libhiredis
