@@ -19,7 +19,9 @@ requirements:
     - {{ compiler('c') }}  # [unix]
     - {{ compiler('cxx') }}  # [unix]
     # TODO do this properly
-    - clang_win-64  # [win]
+    # - clang_win-64  # [win]
+    - {{ compiler('m2w64_c') }}          # [win]
+    - {{ compiler('m2w64_cxx') }}        # [win]
     - cmake
     - ninja
     # The test suite assumes GNU sed and find
