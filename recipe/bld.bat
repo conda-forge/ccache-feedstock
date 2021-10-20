@@ -6,6 +6,8 @@ cd build
 cmake -GNinja ^
     %CMAKE_ARGS% ^
     %SRC_DIR% ^
+    -DHIREDIS_FROM_INTERNET=OFF ^
+    -DZSTD_FROM_INTERNET=OFF ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%
 
