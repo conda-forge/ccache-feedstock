@@ -11,6 +11,7 @@ source:
 
 build:
   number: 0
+  skip: true  # [not win]
 
 requirements:
   build:
@@ -20,7 +21,7 @@ requirements:
     # TODO do this properly
     - clang_win-64  # [win]
     - cmake
-    - make
+    - ninja         # [win]
     # The test suite assumes GNU sed and find
     - sed
     - findutils  # [osx]
