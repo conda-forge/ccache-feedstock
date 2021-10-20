@@ -10,15 +10,12 @@ source:
   sha256: 357a2ac55497b39ad6885c14b00cda6cf21d1851c6290f4288e62972665de417
 
 build:
-  number: 0
-  skip: true  # [not win]
+  number: 1
 
 requirements:
   build:
-    - gnuconfig  # [unix]
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    # TODO do this properly
     - cmake
     - ninja
     # The test suite assumes GNU sed and find

@@ -6,8 +6,9 @@ cd build
 cmake -GNinja ^
     %CMAKE_ARGS% ^
     %SRC_DIR% ^
-    -DHAVE_CXX_ATOMICS64_WITHOUT_LIB=True ^
-    -DHAVE_CXX_ATOMICS_WITHOUT_LIB=True
+    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX%
 
 ninja
+ninja check
 ninja install
