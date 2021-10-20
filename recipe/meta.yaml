@@ -11,13 +11,14 @@ source:
 
 build:
   number: 0
-  skip: true  # [win]
 
 requirements:
   build:
     - gnuconfig  # [unix]
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - {{ compiler('c') }}  # [unix]
+    - {{ compiler('cxx') }}  # [unix]
+    # TODO do this properly
+    - clang_win-64  # [win]
     - cmake
     - make
     # The test suite assumes GNU sed and find
