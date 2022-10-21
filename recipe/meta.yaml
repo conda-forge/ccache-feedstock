@@ -17,6 +17,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - pkg-config
     - ninja
     # The test suite assumes GNU sed and find
     - sed        # [not win]
