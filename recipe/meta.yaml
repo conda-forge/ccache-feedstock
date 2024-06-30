@@ -1,5 +1,5 @@
 {% set name = "ccache" %}
-{% set version = "4.9.1" %}
+{% set version = "4.10.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
-  sha256: 12834ecaaaf2db069dda1d1d991f91c19e3274cc04a471af5b64195def17e90f
+  sha256: 8f8ad60d9363857812aa8af3fa7fb72be5ea5cf193f824d16d237a8a79256be4
 
 build:
   number: 0
@@ -15,6 +15,7 @@ build:
 requirements:
   build:
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - cmake
     - pkg-config
