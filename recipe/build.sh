@@ -11,6 +11,7 @@ cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=${PREFIX} \
     -DENABLE_TESTING=OFF \
+    -DWARNINGS_AS_ERRORS=FALSE \
     -GNinja \
     ${SRC_DIR}
 
