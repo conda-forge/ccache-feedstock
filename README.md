@@ -17,7 +17,6 @@ ccache is a compiler cache. It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is
 being done again. Supported languages are C, C++, Objective-C and Objective-C++.
 
-
 Current build status
 ====================
 

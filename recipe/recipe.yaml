@@ -1,12 +1,13 @@
-{% set name = "ccache" %}
-{% set version = "4.11" %}
+context:
+  name: ccache
+  version: "4.11"
 
 package:
-  name: {{ name|lower }}
-  version: {{ version }}
+  name: ${{ name|lower }}
+  version: ${{ version }}
 
 source:
-  url: https://github.com/ccache/ccache/releases/download/v{{ version }}/ccache-{{ version }}.tar.gz
+  url: https://github.com/ccache/ccache/releases/download/v${{ version }}/ccache-${{ version }}.tar.gz
   sha256: 7dba208540dc61cedd5c93df8c960055a35f06e29a0a3cf766962251d4a5c766
 
 build:
@@ -14,31 +15,36 @@ build:
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ stdlib("c") }}
-    - {{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
     - cmake
     - pkg-config
     - ninja
     # The test suite assumes GNU sed and find
-    - sed        # [not win]
-    - findutils  # [osx]
+    - if: unix
+      then:
+        - sed
+        - findutils
   host:
     - libhiredis
     - zstd
-    - ucrt  # [win]
+    - if: win
+      then:
+        - ucrt
   run:
-    - ucrt  # [win]
+    - if: win
+      then:
+        - ucrt
 
-test:
-  commands:
+tests:
+  - script:
     - ccache --help
     - ccache --version
 
 about:
-  home: https://ccache.dev/
+  homepage: https://ccache.dev/
   license: GPL-3.0-only
-  license_family: GPL
   license_file: GPL-3.0.txt
   summary: A compiler cache
 
@@ -46,8 +52,8 @@ about:
     ccache is a compiler cache. It speeds up recompilation by caching
     previous compilations and detecting when the same compilation is
     being done again. Supported languages are C, C++, Objective-C and Objective-C++.
-  doc_url: https://ccache.dev/manual/latest.html
-  dev_url: https://github.com/ccache/ccache
+  documentation: https://ccache.dev/manual/latest.html
+  repository: https://github.com/ccache/ccache
 
 extra:
   recipe-maintainers:
