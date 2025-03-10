@@ -17,19 +17,11 @@ ccache is a compiler cache. It speeds up recompilation by caching
 previous compilations and detecting when the same compilation is
 being done again. Supported languages are C, C++, Objective-C and Objective-C++.
 
-
 Current build status
 ====================
 
 
-<table><tr>
-    <td>Travis</td>
-    <td>
-      <a href="https://app.travis-ci.com/conda-forge/ccache-feedstock">
-        <img alt="linux" src="https://img.shields.io/travis/com/conda-forge/ccache-feedstock/main.svg?label=Linux">
-      </a>
-    </td>
-  </tr>
+<table>
     
   <tr>
     <td>Azure</td>
