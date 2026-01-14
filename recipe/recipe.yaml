@@ -29,6 +29,7 @@ requirements:
   host:
     - libhiredis
     - zstd
+    - xxhash
     - if: win
       then:
         - ucrt
