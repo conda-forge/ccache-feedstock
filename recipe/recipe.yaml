@@ -1,6 +1,6 @@
 context:
   name: ccache
-  version: "4.13"
+  version: "4.13.1"
 
 package:
   name: ${{ name|lower }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://github.com/ccache/ccache/releases/download/v${{ version }}/ccache-${{ version }}.tar.gz
-  sha256: 4f188d7e1229d09963230a8427e8b3ff824f14f6a48a909250771defb12225cb
+  sha256: e822547b0344c567c6f748f75d4da056c360e2196da12d213ec0caf39d72896d
 
 build:
   number: 0
