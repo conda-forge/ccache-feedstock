@@ -19,7 +19,7 @@ requirements:
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
     - cmake
-    - pkg-config
+    - pkgconf
     - ninja
     # The test suite assumes GNU sed and find
     - if: unix
