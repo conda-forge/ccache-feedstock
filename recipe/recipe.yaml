@@ -11,7 +11,7 @@ source:
   sha256: d50587abd5b787a7ba48cb1d76f7a4f09036e0181e742fc7383a8b154d73f0ba
 
 build:
-  number: 0
+  number: 1
 
 requirements:
   build:
@@ -19,7 +19,7 @@ requirements:
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
     - cmake
-    - pkg-config
+    - pkgconf
     - ninja
     # The test suite assumes GNU sed and find
     - if: unix
